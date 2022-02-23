@@ -1,0 +1,78 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © hriitk
+
+//@version=4
+study(title="uptrend/downtrend  3TD points", overlay=true)
+
+show_uptrend_bool   = input(title="Show 3TD for uptrend",  type=input.bool,defval=false)
+show_downtrend_bool = input(title="Show 3TD for downtrend",type=input.bool,defval=true)
+show_nr_candles = input(title="Show NR4 / NR7",type=input.bool,defval=false)
+
+// var trend_plot_rite = 0
+// var trend_plot_left = 0
+// var trend_vol_up1pvt = 0
+// var trend_vol_up2pvt = 0
+// var trend_vol_upavgpvt = 0
+
+
+left_low_confirm_up = (low[3] > low[2]) and  (low[2] > low[1])  and (low[1] > low)
+rite_low_confirm_up = (low[3] < low[2]) and  (low[2] < low[1])  and (low[1] < low)
+
+
+volume_pivot_up = (volume > 1.2*volume[1]) and (volume > 1.3*volume[2]) and  (volume > 1.4*volume[3]) and (volume > 1.45*volume[4]) and (volume > 1.5*volume[5]) 
+volume_pivot_up2 = (volume > 1.15*volume[1]) and (volume > 1.25*volume[2]) and  (volume > 1.3*volume[3]) 
+vema_up = volume >  1.5* ema(volume,14)
+
+// 	trend_plot_rite  := rite_low_confirm_up
+// 	trend_plot_left  := left_low_confirm_up
+// 	trend_vol_up1pvt := volume_pivot_up
+// 	trend_vol_up2pvt := volume_pivot_up2
+// 	trend_vol_upavgpvt := vema_up
+
+
+
+closeLower_dw  =    (high[3] < high[2]) and  (high[2] < high[1])   and (high[1] < high)
+closehigher_dw =    (high[3] > high[2]) and  (high[2] > high[1])   and (high[1] > high)
+
+
+volume_pivot_dw = (volume > 1.2*volume[1]) and (volume > 1.3*volume[2]) and  (volume > 1.4*volume[3]) and (volume > 1.45*volume[4]) and (volume > 1.5*volume[5]) 
+volume_pivot_dw2 = (volume > 1.15*volume[1]) and (volume > 1.25*volume[2]) and  (volume > 1.3*volume[3])  
+vema_dw = volume >  1.5* ema(volume,14)
+
+// 	trend_plot_rite := closeLower_dw
+// 	trend_plot_left := closehigher_dw
+// 	trend_vol_up1pvt := volume_pivot_dw
+// 	trend_vol_up2pvt := volume_pivot_dw2
+// 	trend_vol_upavgpvt := vema_dw
+
+
+plotshape(series=show_downtrend_bool?closeLower_dw:na, style=shape.triangleup, location=location.abovebar,color=color.green,size=size.tiny, transp=0)
+plotshape(series=show_downtrend_bool?closehigher_dw:na, style=shape.triangledown, color=color.orange, size=size.tiny,offset=-3,location=location.abovebar, transp=20)
+
+plotshape(series=show_uptrend_bool?rite_low_confirm_up:na, style=shape.triangleup, color=color.green, size=size.tiny,location=location.belowbar, offset=-3)
+plotshape(series=show_uptrend_bool?left_low_confirm_up:na, style=shape.triangledown,color=color.orange,size=size.tiny,location=location.belowbar,transp=15)
+
+plotshape(series=show_downtrend_bool?volume_pivot_dw2:na, style=  shape.diamond, color=color.yellow, size=size.tiny,location=location.belowbar)
+plotshape(series=show_downtrend_bool?volume_pivot_dw:na, style=  shape.diamond, color=color.blue, size=size.tiny,location=location.belowbar)
+plotshape(series=show_downtrend_bool?vema_dw:na, style=  shape.diamond, color=color.white, size=size.tiny,location=location.bottom, transp=10)
+
+plotshape(series=show_uptrend_bool?volume_pivot_up2:na, style=  shape.diamond, color=color.yellow, size=size.tiny,location=location.abovebar)
+plotshape(series=show_uptrend_bool?volume_pivot_up:na, style=  shape.diamond, color=color.blue, size=size.tiny,location=location.abovebar)
+plotshape(series=show_uptrend_bool?vema_up:na, style=  shape.triangleup, color=color.white, size=size.tiny,location=location.top, transp=10)
+
+
+diff0 = high[0] - low[0]
+diff1 = high[1] - low[1]
+diff2 = high[2] - low[2]
+diff3 = high[3] - low[3]
+diff4 = high[4] - low[4]
+diff5 = high[5] - low[5]
+diff6 = high[6] - low[6]
+
+nr4_1 = (diff0 <= diff1) and (diff0 <= diff2) and (diff0 <= diff3)
+nr7_1 = nr4_1 and (diff0 <= diff4) and (diff0 <= diff5) and (diff0 <= diff6)
+// nr7 = nr4 and (tr <= tr[4]) and (tr <= tr[5]) and (tr <= tr[6])
+plotshape(show_nr_candles?nr4_1 : na, title= "NR4", location=location.abovebar, color=color.white, style=shape.arrowdown,size=size.small)
+plotshape(show_nr_candles?nr7_1 : na, title= "NR7", location=location.abovebar, color=color.orange, style=shape.arrowdown,size=size.tiny)
+
+
